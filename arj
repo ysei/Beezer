@@ -1,0 +1,56 @@
+#!/bin/sh
+# arj -> rar rr 0:0 1:5.5
+# YAMAGITIseisei
+
+# echo $* > /var/ttmmpp.txt
+# echo `pwd` > /var/ttmmpp.txt
+#exit
+
+# echo "$1" | grep ^-
+
+m="0"
+
+shift
+while	!	[ `echo "$1" | grep ^-`_ = _ ]
+do
+	echo	$1
+	if	!	[ `echo "$1" | grep ^-m`_ = _ ];	then
+		m=`echo "$1"	|	sed -e 's@-m@@'`
+		if	[  "1" = "$m" ];	then
+			m="5.5"
+		fi
+	fi
+	shift
+done
+
+# echo	rar a -m5.5 -r0 -rr1 $*
+
+# opt="a -"$m" -ol -r0 -rr1"
+# opt="a -m"$m" -ol -r0 -rr1 -s16"
+# opt="a -m"$m" -ol -r0 -rr1 -s64"
+opt="a -m"$m" -ol -r0 -rr1 -s64"
+name=$1
+shift
+# cd `dirname "$name"` && 
+name=`basename "$name"	|	sed -e 's@\.arj$@.rar@'`
+# && 
+
+if	[ -e "$name" ];	then
+	alert	--stop "$name : Overwrite" Ok Cancel	||	exit
+fi
+
+rar $opt $name "$@" # >> /var/ttmmpp.txt
+exit
+
+
+# kmnd=$1
+# shift
+#  m=""
+# rr=""
+# if [ $kmnd = "a" ]; then
+#	rr="-rr1"
+#	m="-m5.5"
+#fi
+# echo $kmnd
+# eval 
+# rar__orig $kmnd $rr $m `echo $* | sed -e "s@\s@\ @g"`
