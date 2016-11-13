@@ -1,5 +1,6 @@
 #!/bin/sh
-# arj -> rar rr 0:0 1:5.5
+# arj -> rar rr 1000M 0:0 1:5.5
+# arj -> 7z solid 1000M 3:9
 # YAMAGITIseisei
 
 # echo $* > /var/ttmmpp.txt
@@ -7,6 +8,10 @@
 #exit
 
 # echo "$1" | grep ^-
+
+opt="a -ol -r0 -rr1 -s64 -v1024000 -m"	# mitesuto
+archiver="rar"				# mitesuto
+fname__ext=$archiver		# mitesuto
 
 m="0"
 
@@ -18,28 +23,41 @@ do
 		m=`echo "$1"	|	sed -e 's@-m@@'`
 		if	[  "1" = "$m" ];	then
 			m="5.5"
+		elif	[  "3" = "$m" ];	then	# mitesuto
+			archiver="7z"
+			fname__ext=$archiver
+			m="9"
+			opt="a -t7z -m0=lzma -mfb=64 -md=32m -ms=on -v1000m -mx="
 		fi
 	fi
 	shift
 done
 
 # echo	rar a -m5.5 -r0 -rr1 $*
-
+# 7za a -t7z  -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on archive.7z  dir1
 # opt="a -"$m" -ol -r0 -rr1"
 # opt="a -m"$m" -ol -r0 -rr1 -s16"
-# opt="a -m"$m" -ol -r0 -rr1 -s64"
-opt="a -m"$m" -ol -r0 -rr1 -s64"
+# opt="a -m"$m" -ol -r0 -rr1 -s64"	# ok
+opt=$opt$m	# mitesuto
 name=$1
 shift
 # cd `dirname "$name"` && 
-name=`basename "$name"	|	sed -e 's@\.arj$@.rar@'`
+# name=`basename "$name"	|	sed -e 's@\.arj$@.rar@'`	# ok
+# echo $fname__ext  >> /var/ttmmpp.txt	# mitesuto
+# echo `basename "$name"	|	sed -e "s@\\.arj\\$@.$fname__ext@"`  >> /var/ttmmpp.txt	# mitesuto
+name=`basename "$name"	|	sed -e "s@\\.arj\\$@.$fname__ext@"`	# mitesuto
+# sed__e='\'s@\.arj$@.'$fname__ext'\'@'
+# name=`basename "$name"	|	sed -e $sed__e`
 # && 
 
-if	[ -e "$name" ];	then
+# if	[ -e "$name" ];	then
+if	[ -e "$name" ]	||	[ -e "$name."*0* ];	then
 	alert	--stop "$name : Overwrite" Ok Cancel	||	exit
 fi
 
-rar $opt $name "$@" # >> /var/ttmmpp.txt
+# rar $opt $name "$@" # >> /var/ttmmpp.txt	# ok
+# echo $archiver $opt $name "$@" >> /var/ttmmpp.txt	# mitesuto
+$archiver $opt $name "$@" # >> /var/ttmmpp.txt	# mitesuto
 exit
 
 
